@@ -14,23 +14,36 @@ const attendanceMarked = attendance.some(
     record.user === user.name &&
     record.date === today
 );
-const upcomingTasks = tasks.filter(
+const userTasks = projects.flatMap((project) =>
+  (project.members || [])
+    .filter((member) => member.member === user?.name)
+    .map((member) => ({
+      ...member,
+      projectName: project.projectName,
+      dueDate: project.dueDate,
+      priority: project.priority
+    }))
+);
+
+const upcomingTasks = userTasks.filter(
   (task) => task.status !== "Completed"
 );
-const pendingTasks = tasks.filter(
+
+const pendingTasks = userTasks.filter(
   (task) => task.status === "Pending"
 );
-const completedTasks = tasks.filter(
+
+const completedTasks = userTasks.filter(
   (task) => task.status === "Completed"
 );
 
 const productivityIncrease = completedTasks.length * 2;
 
 const productivity =
-  tasks.length === 0
+  userTasks.length === 0
     ? 0
     : Math.round(
-        (completedTasks.length / tasks.length) * 100
+        (completedTasks.length / userTasks.length) * 100
       );
 const hour = new Date().getHours();
 
@@ -204,10 +217,18 @@ icon={<LuCalendarCheck size={26} color="#facc15" />}
 />
 
       <SummaryCard
-        title="Active Projects"
-        value={projects.length}
-        subtitle="Assigned"
-      />
+  title="Active Projects"
+  value={
+    projects.filter(project =>
+      (project.members || []).some(
+        member =>
+          member.member === user?.name &&
+          member.status !== "Completed"
+      )
+    ).length
+  }
+  subtitle="Assigned"
+/>
 
       <SummaryCard
         title="Productivity"
