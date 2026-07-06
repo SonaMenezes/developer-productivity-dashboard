@@ -25,17 +25,29 @@ function Projects() {
 
   const totalProjects = projects.length;
 
-  const completedProjects = projects.filter(project =>
-    project.members.every(
-      member => member.status === "Completed"
-    )
-  ).length;
+ const completedProjects = projects.filter(project => {
+  const members = Array.isArray(project.members)
+    ? project.members
+    : [];
 
-  const inProgressProjects = projects.filter(project =>
-    project.members.some(
-      member => member.status === "Completed"
-    )
-  ).length;
+  return members.length > 0 &&
+    members.every(member => member.status === "Completed");
+}).length;
+
+const inProgressProjects = projects.filter(project => {
+  const members = Array.isArray(project.members)
+    ? project.members
+    : [];
+
+  return members.some(member =>
+    member.status === "In Progress" ||
+    member.status === "Completed"
+  ) &&
+  !(
+    members.length > 0 &&
+    members.every(member => member.status === "Completed")
+  );
+}).length;
 
   const overdueProjects = projects.filter(project => {
 
@@ -52,12 +64,10 @@ function Projects() {
       );
 
   const filteredProjects = projects.filter(project =>
-
-    project.projectName
-      .toLowerCase()
-      .includes(search.toLowerCase())
-
-  );
+  (project.projectName || "")
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
 
   return (
 
@@ -255,12 +265,15 @@ No Projects Found
 
 filteredProjects.map(project=>{
 
-const completed=
-project.members.filter(
-m=>m.status==="Completed"
+const members = Array.isArray(project.members)
+  ? project.members
+  : [];
+
+const completed = members.filter(
+  m => m.status === "Completed"
 ).length;
 
-const totalMembers = project.members.length;
+const totalMembers = members.length;
 
 const progress =
   totalMembers === 0
@@ -336,16 +349,16 @@ width:`${progress}%`
 
 <td>
 
-{project.members.length}
+{totalMembers}
 
 
 </td>
 
 <td>
 
-<span className={`ppssx-priority-${project.priority.toLowerCase()}`}>
+<span className={`ppssx-priority-${(project.priority || "medium").toLowerCase()}`}>
 
-{project.priority}
+{project.priority || "Medium"}
 
 </span>
 
