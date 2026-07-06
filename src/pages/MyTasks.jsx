@@ -32,31 +32,28 @@ if(!user)return;
 
 const myTasks=[];
 
-projects.forEach(project=>{
+projects.forEach(project => {
 
-project.members.forEach(member=>{
+  const members = Array.isArray(project.members)
+    ? project.members
+    : [];
 
-if(member.member===user.name){
+  members.forEach(member => {
 
-myTasks.push({
+    if (member.member === user.name) {
 
-projectId:project.id,
+      myTasks.push({
+        projectId: project.id,
+        projectName: project.projectName || "Unnamed Project",
+        priority: project.priority || "Medium",
+        dueDate: project.dueDate || "No deadline",
+        task: member.task || "No task specified",
+        status: member.status || "Pending"
+      });
 
-projectName:project.projectName,
+    }
 
-priority:project.priority,
-
-dueDate:project.dueDate,
-
-task:member.task,
-
-status:member.status
-
-});
-
-}
-
-});
+  });
 
 });
 
@@ -66,18 +63,14 @@ setTasks(myTasks);
 
 
 
-const filteredTasks=tasks.filter(task=>
-
-task.task
-.toLowerCase()
-.includes(search.toLowerCase())
-
-||
-
-task.projectName
-.toLowerCase()
-.includes(search.toLowerCase())
-
+const filteredTasks = tasks.filter(task =>
+  (task.task || "")
+    .toLowerCase()
+    .includes(search.toLowerCase())
+  ||
+  (task.projectName || "")
+    .toLowerCase()
+    .includes(search.toLowerCase())
 );
 const startTask = (projectId) => {
 console.log(projectId);
@@ -88,7 +81,11 @@ console.log(user.name);
 
     if(project.id === projectId){
 
-      project.members.forEach(member => {
+      const members = Array.isArray(project.members)
+  ? project.members
+  : [];
+
+members.forEach(member => {
         console.log(member.member);
         if(member.member === user.name){
 
@@ -165,7 +162,11 @@ const completeTask = (projectId) => {
 
     if(project.id === projectId){
 
-      project.members.forEach(member => {
+      const members = Array.isArray(project.members)
+  ? project.members
+  : [];
+
+members.forEach(member => {
 
         if(member.member === user.name){
 
@@ -322,7 +323,7 @@ className="qxmv-task-card"
 
 <h2>{task.task}</h2>
 
-<span className={`qxmv-priority-${task.priority.toLowerCase()}`}>
+<span className={`qxmv-priority-${(task.priority || "medium").toLowerCase()}`}>
 
 <LuFlag size={15}/>
 
