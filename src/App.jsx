@@ -33,24 +33,7 @@ function App() {
 
   return savedTasks
     ? JSON.parse(savedTasks)
-    : [
-        {
-          name: "UI Design",
-          status: "Pending",
-        },
-        {
-          name: "Dashboard Layout",
-          status: "Completed",
-        },
-        {
-          name: "Testing",
-          status: "In Progress",
-        },
-        {
-          name: "API Integration",
-          status: "Pending",
-        },
-      ];
+    : [];
 });
 
 useEffect(() => {
@@ -228,7 +211,11 @@ return (
               {user?.role === "Admin" && (
               <Route
               path="/assign-tasks"
-              element={<AssignTasks/>}  
+              element={<AssignTasks
+              user={user}
+              projects={projects}
+              setProjects={setProjects}
+              />}  
               />
               )}
 

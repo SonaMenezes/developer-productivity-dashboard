@@ -45,7 +45,7 @@ function TaskManager({ user, tasks, setTasks }) {
   const startEdit = (index, status) => {
     setEditIndex(index);
     setEditStatus(status);
-    task.info("Editing task...");
+    toast.info("Editing task...");
   };
 
   // Save Edit

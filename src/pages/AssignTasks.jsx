@@ -16,12 +16,9 @@ import {
 } from "react-icons/lu";
 import { toast } from "react-toastify";
 
-function AssignTask() {
+function AssignTask({user, projects, setProjects}) {
   const [users, setUsers] = useState([]);
-  const [projects, setProjects] = useState(() => {
-  const saved = localStorage.getItem("projects");
-  return saved ? JSON.parse(saved) : [];
-});
+  
 
   const [editingTask, setEditingTask] = useState(null);
   const [search, setSearch] = useState("");

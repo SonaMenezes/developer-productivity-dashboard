@@ -7,23 +7,26 @@ function Settings({ user,setUser }) {
   const [name, setName] = useState(user?.name || user?.username || "");
   const [email, setEmail] = useState(user?.email || "");
   const [profileImage, setProfileImage] = useState(user?.profileImage || "");
-  const [projectName, setProjectName] = useState(
-    localStorage.getItem("projectName") || "Developer Productivity Dashboard"
-  );
 
   const [organization, setOrganization] = useState(
     localStorage.getItem("organization") || "ABC Technologies"
   );
+  const [workspaceName, setWorkspaceName] = useState(
+  localStorage.getItem("workspaceName") ||
+  "Developer Productivity Dashboard"
+);
 
-  const [apiVersion, setApiVersion] = useState(
-    localStorage.getItem("apiVersion") || "v1"
-  );
+const [workingHours, setWorkingHours] = useState(
+  localStorage.getItem("workingHours") || "9:00 AM - 6:00 PM"
+);
 
-  const [baseUrl, setBaseUrl] = useState(
-    localStorage.getItem("baseUrl") || "https://api.company.com"
-  );
+const [attendanceCutoff, setAttendanceCutoff] = useState(
+  localStorage.getItem("attendanceCutoff") || "10:00"
+);
+
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showOrganizationModal, setShowOrganizationModal] = useState(false);
 
   const handleImageUpload = (e) => {
   const file = e.target.files[0];
@@ -72,14 +75,14 @@ function Settings({ user,setUser }) {
 
 };
 
-  const saveProject = () => {
-    localStorage.setItem("projectName", projectName);
-    localStorage.setItem("organization", organization);
-    localStorage.setItem("apiVersion", apiVersion);
-    localStorage.setItem("baseUrl", baseUrl);
+  const saveOrganization = () => {
+  localStorage.setItem("workspaceName", workspaceName);
+  localStorage.setItem("organization", organization);
+  localStorage.setItem("workingHours", workingHours);
+  localStorage.setItem("attendanceCutoff", attendanceCutoff);
 
-    toast.success("Project settings saved!");
-  };
+  toast.success("Organization settings saved!");
+};
 
   return (
     <div>
@@ -187,7 +190,7 @@ function Settings({ user,setUser }) {
             <label>Department</label>
             <input
               readOnly
-              value={isAdmin ? "API Management" : "Development"}
+              value={isAdmin ? "Administration" : "Development"}
             />
           </div>
 
@@ -201,69 +204,75 @@ function Settings({ user,setUser }) {
 
       </div>
 
-      {isAdmin && (
+     {isAdmin && (
+  <div className="settings-card">
 
-        <div className="settings-card">
+    <h2
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "10px",
+        color: "#FFD700",
+        fontWeight: "700",
+      }}
+    >
+      <FolderKanban size={22} />
+      Organization Settings
+    </h2>
 
-          <h2
-  style={{
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "10px",
-    color: "#FFD700",
-    fontWeight: "700",
-  }}
+    <div className="settings-grid">
+
+      <div>
+        <label>Workspace Name</label>
+        <input
+          value={workspaceName}
+          onChange={(e) => setWorkspaceName(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label>Organization Name</label>
+        <input
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label>Working Hours</label>
+        <input
+          value={workingHours}
+          onChange={(e) => setWorkingHours(e.target.value)}
+          placeholder="9:00 AM - 6:00 PM"
+        />
+      </div>
+
+      <div>
+  <label>Attendance Cut-off Time</label>
+
+  <select
+    value={attendanceCutoff}
+    onChange={(e) => setAttendanceCutoff(e.target.value)}
+  >
+    <option value="09:00">9:00 AM</option>
+    <option value="09:30">9:30 AM</option>
+    <option value="10:00">10:00 AM</option>
+    <option value="10:30">10:30 AM</option>
+    <option value="11:00">11:00 AM</option>
+  </select>
+</div>
+
+    </div>
+
+    <button
+  className="save-btn"
+  onClick={() => setShowOrganizationModal(true)}
 >
-            <FolderKanban size={22} /> Project Settings
-          </h2>
+  Save Organization Settings
+</button>
 
-          <div className="settings-grid">
-
-            <div>
-              <label>Project Name</label>
-              <input
-                value={projectName}
-                onChange={(e)=>setProjectName(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label>Organization</label>
-              <input
-                value={organization}
-                onChange={(e)=>setOrganization(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label>API Version</label>
-              <select
-                value={apiVersion}
-                onChange={(e)=>setApiVersion(e.target.value)}
-              >
-                <option>v1</option>
-                <option>v2</option>
-                <option>v3</option>
-              </select>
-            </div>
-
-            <div>
-              <label>Base URL</label>
-              <input
-                value={baseUrl}
-                onChange={(e)=>setBaseUrl(e.target.value)}
-              />
-            </div>
-
-          </div>
-
-          <button className="save-btn" onClick={saveProject}>
-            Save Project Settings
-          </button>
-          
-        </div>
-      
-      )}
+  </div>
+)}
       {showProfileModal && (
   <div className="modal-overlay">
     <div className="delete-modal">
@@ -355,6 +364,40 @@ function Settings({ user,setUser }) {
           onClick={() => {
             saveProfile();
             setShowSaveModal(false);
+          }}
+        >
+          Save
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
+{showOrganizationModal && (
+  <div className="modal-overlay">
+    <div className="delete-modal">
+
+      <h2>Save Organization Settings</h2>
+
+      <p>
+        Are you sure you want to save the organization settings?
+      </p>
+
+      <div className="modal-actions">
+
+        <button
+          className="cancel-btn"
+          onClick={() => setShowOrganizationModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="save-btn"
+          onClick={() => {
+            saveOrganization();
+            setShowOrganizationModal(false);
           }}
         >
           Save

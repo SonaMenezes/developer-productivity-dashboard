@@ -6,16 +6,28 @@ import {
 } from "recharts";
 import { LuChartPie, LuTrendingUp } from "react-icons/lu";
 
-function ProgressOverview({ projects }) {
- let completed = 0;
+function ProgressOverview({ projects, user }) {
+let completed = 0;
 let pending = 0;
 let inProgress = 0;
 
-projects.forEach(project => {
-  project.members.forEach(member => {
-    if (member.status === "Completed") completed++;
-    else if (member.status === "Pending") pending++;
-    else if (member.status === "In Progress") inProgress++;
+projects.forEach((project) => {
+  (project.members || []).forEach((member) => {
+
+    if (member.member === user?.name) {
+
+      if (member.status === "Completed") {
+        completed++;
+      } 
+      else if (member.status === "Pending") {
+        pending++;
+      } 
+      else if (member.status === "In Progress") {
+        inProgress++;
+      }
+
+    }
+
   });
 });
 
@@ -48,7 +60,27 @@ const total = completed + pending + inProgress;
           value: pending,
         },
       ];
+  let progressMessage = "";
+let progressTitle = "";
 
+if (percentage === 0) {
+  if (inProgress > 0) {
+    progressTitle = "Great start!";
+    progressMessage = "Keep moving forward.";
+  } else {
+    progressTitle = "Ready to begin?";
+    progressMessage = "Start a task and build momentum.";
+  }
+} else if (percentage < 50) {
+  progressTitle = "Keep going!";
+  progressMessage = "You're making steady progress.";
+} else if (percentage < 100) {
+  progressTitle = "Almost there!";
+  progressMessage = "You're getting closer to the finish line.";
+} else {
+  progressTitle = "Excellent work!";
+  progressMessage = "All your tasks are completed.";
+}
   return (
     <div className="notification-panel">
 
@@ -163,19 +195,17 @@ const total = completed + pending + inProgress;
 </div>
 
         <div>
+  <strong>{progressTitle}</strong>
 
-          <strong>Keep going!</strong>
-
-          <p
-            style={{
-              color: "#9ca3af",
-              margin: 0
-            }}
-          >
-            You're making great progress.
-          </p>
-
-        </div>
+  <p
+    style={{
+      color: "#9ca3af",
+      margin: 0
+    }}
+  >
+    {progressMessage}
+  </p>
+</div>
 
       </div>
 

@@ -2,7 +2,7 @@ import SummaryCard from "../components/SummaryCard";
 import ActivityFeed from "../components/ActivityFeed";
 import QuickActions from "../components/QuickActions";
 import { MdOutlineEvent, MdSchedule, MdSpeed, } from "react-icons/md";
-import { LuChartNoAxesCombined,LuCalendarCheck,LuCircleAlert,LuBadgeCheck,LuCircleCheck } from "react-icons/lu";
+import { LuChartNoAxesCombined,LuCalendarCheck,LuCircleAlert,LuBadgeCheck,LuCircleCheck, LuListChecks } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import ProgressOverview from "../components/ProgressOverview";
 function Dashboard({user, tasks, projects, setProjects, activities, developers,attendance}) {
@@ -85,7 +85,11 @@ projects.length === 0
 const developerCount = developers.filter(
   (person) => person.role !== "Admin"
 ).length;
-const presentToday = attendance.length;
+const presentToday = new Set(
+  attendance
+    .filter((record) => record.date === today)
+    .map((record) => record.user)
+).size;
 const attendancePercentage =
 developerCount === 0
 ? 0
@@ -203,10 +207,11 @@ icon={<LuCalendarCheck size={26} color="#facc15" />}
   ) : (
     <>
       <SummaryCard
-        title="Tasks Due Today"
-        value={pendingTasks.length}
-        subtitle="Pending"
-      />
+  title="Task Completion"
+  value={`${completedTasks.length}/${userTasks.length}`}
+  subtitle="Completed / Total"
+  icon={<LuListChecks size={26} color="#facc15" />}
+/>
 
       <SummaryCard
   title="Performance Boost"
@@ -255,6 +260,7 @@ icon={<LuCalendarCheck size={26} color="#facc15" />}
 ) : (
  <ProgressOverview
  projects={projects}
+ user={user}
  />
 )}
 </div>

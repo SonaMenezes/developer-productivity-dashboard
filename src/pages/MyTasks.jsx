@@ -16,7 +16,7 @@ const [projects,setProjects]=useState([]);
 const [tasks,setTasks]=useState([]);
 
 const [search,setSearch]=useState("");
-
+const [statusFilter, setStatusFilter] = useState("All");
 useEffect(()=>{
 
 const savedProjects=
@@ -63,15 +63,23 @@ setTasks(myTasks);
 
 
 
-const filteredTasks = tasks.filter(task =>
-  (task.task || "")
-    .toLowerCase()
-    .includes(search.toLowerCase())
-  ||
-  (task.projectName || "")
-    .toLowerCase()
-    .includes(search.toLowerCase())
-);
+const filteredTasks = tasks.filter((task) => {
+
+  const matchesSearch =
+    (task.task || "")
+      .toLowerCase()
+      .includes(search.toLowerCase()) ||
+    (task.projectName || "")
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "All" ||
+    task.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
+
 const startTask = (projectId) => {
 console.log(projectId);
 console.log(user.name);
@@ -236,15 +244,7 @@ window.dispatchEvent(new Event("storage"));
 setProjects(updatedProjects);
 
 toast.success("Task completed successfully!");
-setTimeout(() => {
 
-  setTasks(currentTasks =>
-    currentTasks.filter(
-      task => task.projectId !== projectId
-    )
-  );
-
-}, 1000);
 };
 
 return(
@@ -295,24 +295,67 @@ setSearch(e.target.value)
 </div>
 
 </div>
-<p style={{color:"white",fontSize:"20px"}}>
-  Tasks:{filteredTasks.length}
-</p>
-<div className="qxmv-grid">
+<div className="qxmv-filter-row">
 
-{filteredTasks.length===0? (
+  <button
+    className={`qxmv-filter-btn ${statusFilter === "All" ? "active" : ""}`}
+    onClick={() => setStatusFilter("All")}
+  >
+    All ({tasks.length})
+  </button>
 
-<div className="qxmv-empty-card">
+  <button
+    className={`qxmv-filter-btn ${statusFilter === "Pending" ? "active" : ""}`}
+    onClick={() => setStatusFilter("Pending")}
+  >
+    Pending ({tasks.filter(task => task.status === "Pending").length})
+  </button>
 
-<h2>No Tasks Assigned</h2>
+  <button
+    className={`qxmv-filter-btn ${statusFilter === "In Progress" ? "active" : ""}`}
+    onClick={() => setStatusFilter("In Progress")}
+  >
+    In Progress ({tasks.filter(task => task.status === "In Progress").length})
+  </button>
 
-<p>
-You don't have any assigned tasks yet.
-</p>
+  <button
+    className={`qxmv-filter-btn ${statusFilter === "Completed" ? "active" : ""}`}
+    onClick={() => setStatusFilter("Completed")}
+  >
+    Completed ({tasks.filter(task => task.status === "Completed").length})
+  </button>
 
 </div>
 
-):(filteredTasks.map((task,index)=>(
+<div className="qxmv-grid">
+
+{filteredTasks.length === 0 ? (
+
+  <div className="qxmv-empty-card">
+
+    <h2>
+      {statusFilter === "Pending"
+        ? "No Pending Tasks"
+        : statusFilter === "In Progress"
+        ? "No Tasks In Progress"
+        : statusFilter === "Completed"
+        ? "No Completed Tasks"
+        : "No Tasks Assigned"}
+    </h2>
+
+    <p>
+      {statusFilter === "Pending"
+        ? "You currently have no pending tasks."
+        : statusFilter === "In Progress"
+        ? "You don't have any tasks in progress right now."
+        : statusFilter === "Completed"
+        ? "You haven't completed any tasks yet."
+        : "You don't have any assigned tasks yet."}
+    </p>
+
+  </div>
+
+) : (filteredTasks.map((task,index)=>(
 
 <div
 key={index}

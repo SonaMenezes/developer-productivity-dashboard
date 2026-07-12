@@ -90,9 +90,10 @@ const confirmDeleteNotification = () => {
     JSON.parse(localStorage.getItem("notifications")) || [];
 
   const updatedNotifications =
-    allNotifications.filter(
-      (notification) => notification.id !== id
-    );
+  allNotifications.filter(
+    (notification) =>
+      notification.id !== notificationToDelete
+  );
 
   localStorage.setItem(
     "notifications",
@@ -120,64 +121,37 @@ const confirmDeleteNotification = () => {
   window.dispatchEvent(
     new Event("notificationUpdated")
   );
-
+setShowDeleteModal(false);
+setNotificationToDelete(null);
 };
-const clearReadNotifications = () => {
+const clearAllNotifications = () => {
+  const allNotifications =
+    JSON.parse(localStorage.getItem("notifications")) || [];
 
-const allNotifications =
-JSON.parse(localStorage.getItem("notifications")) || [];
+  const updatedNotifications = allNotifications.filter(
+    (notification) => {
+      if (user?.role === "Admin") {
+        return notification.recipient !== "Admin";
+      }
 
-const updatedNotifications =
-allNotifications.filter(notification=>{
+      return notification.recipient !== user?.name;
+    }
+  );
 
-if(notification.status==="Read"){
+  localStorage.setItem(
+    "notifications",
+    JSON.stringify(updatedNotifications)
+  );
 
-return false;
+  setNotifications([]);
 
-}
-
-return true;
-
-});
-
-localStorage.setItem(
-"notifications",
-JSON.stringify(updatedNotifications)
-);
-
-const userNotifications=
-updatedNotifications
-.filter(notification=>{
-
-if(user?.role==="Admin"){
-
-return notification.recipient==="Admin";
-
-}
-
-return notification.recipient===user?.name;
-
-})
-.sort((a,b)=>{
-
-if(a.status==="Unread"&&b.status==="Read")return-1;
-
-if(a.status==="Read"&&b.status==="Unread")return 1;
-
-return b.id-a.id;
-
-});
-
-setNotifications(userNotifications);
-
-window.dispatchEvent(
-new Event("notificationUpdated")
-);
-
+  window.dispatchEvent(
+    new Event("notificationUpdated")
+  );
 };
 const confirmClearNotifications = () => {
 
-  clearReadNotifications();
+  clearAllNotifications();
 
   setShowClearModal(false);
 
@@ -224,7 +198,7 @@ Clear All
 
 </div>
 
-        
+        <div className="notification-scroll-area">
         {filteredNotifications.length === 0 ? (
 
 <div
@@ -350,6 +324,7 @@ filteredNotifications.map((item) => (
 ))
 
       )}
+      </div>
     {showDeleteModal && (
   <div className="delete-modal-overlay">
     <div className="delete-modal">
@@ -388,7 +363,7 @@ filteredNotifications.map((item) => (
       <h2>Clear Notifications?</h2>
 
       <p>
-        Are you sure you want to clear all read notifications?
+        Are you sure you want to clear all notifications?
       </p>
 
       <div className="delete-modal-buttons">

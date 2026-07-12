@@ -5151,3 +5151,57 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
+.notification-scroll-area {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.notification-scroll-area::-webkit-scrollbar {
+  width: 7px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-track {
+  background: #151515;
+  border-radius: 10px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-thumb {
+  background: #facc15;
+  border-radius: 10px;
+}
+
+.notification-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+.qxmv-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 24px;
+  flex-wrap: wrap;
+}
+
+.qxmv-filter-btn {
+  padding: 10px 18px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #171717;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.qxmv-filter-btn:hover {
+  border-color: #facc15;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.qxmv-filter-btn.active {
+  background: #facc15;
+  color: #111111;
+  border-color: #facc15;
+}
